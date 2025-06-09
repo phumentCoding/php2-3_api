@@ -3,7 +3,7 @@
    include "../config.php";
 
    header("Content-Type: application/json");
-   header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE");
+   header("Access-Control-Allow-Methods: GET,POST,PUT,DELETE");  
    header("Access-Control-Allow-Origin: *");  //http://localhost:3000 , http://localhost:5017
 
    //convert json requestion from client side to associtave array
@@ -46,7 +46,35 @@
 
             
         }else{
+            try{
+                $id = $_GET['id'];
+                $sql = "SELECT * FROM students WHERE id = $id";
+                $result = mysqli_query($con,$sql);
 
+                if(!$result){
+                    throw new Exception(mysqli_error($con));
+                }
+
+                $student = mysqli_fetch_assoc($result);
+
+                http_response_code(200);
+
+                echo json_encode([
+                    'status' => true,
+                    'message' => 'Get question success with id '.$id,
+                    'data' => [
+                        'student' => $student
+                    ]
+                ]);
+
+            }catch(Exception $e){
+                http_response_code(500);
+                echo json_encode([
+                    'status' => false,
+                    'message' => $e->getMessage()
+                ]);
+            }
+            
         }
 
         break;
